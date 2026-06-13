@@ -2,8 +2,11 @@ package ManagerView;
 
 import Login.Login;
 import Login.User;
+import ManagerView.CategoryManagement.ViewCategories;
 import ManagerView.EmployeeManagement.Employee;
 import ManagerView.EmployeeManagement.ViewEmployees;
+import ManagerView.ProductManagement.ViewProducts;
+import ManagerView.SupplierManagement.ViewSuppliers;
 import com.mysql.cj.log.Log;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -16,11 +19,13 @@ import javafx.stage.Stage;
 
 public class ManagerView {
     private Stage stage;
-    private Scene scene;
     private BorderPane root;
 
 
     private ViewEmployees viewEmployees = new ViewEmployees();
+    private ViewSuppliers viewSuppliers = new ViewSuppliers();
+    private ViewProducts viewProducts = new ViewProducts();
+    private ViewCategories viewCategories = new ViewCategories();
 
     public ManagerView(User user) {
         root = new BorderPane();
@@ -54,17 +59,27 @@ public class ManagerView {
                 "-fx-border-color: white;");
 
         Button homeBtn = createMenuButton("Home");
+        homeBtn.setOnAction(e -> showPage("Home Page"));
+
+
         Button employeesBtn = createMenuButton("Employees");
+        employeesBtn.setOnAction(e -> root.setCenter(viewEmployees.getRoot()));
+
+        Button supplierBtn = createMenuButton("Suppliers");
+        supplierBtn.setOnAction(e -> root.setCenter(viewSuppliers.getRoot()));
+
         Button productsBtn = createMenuButton("Products");
+        productsBtn.setOnAction(e -> root.setCenter(viewProducts.getRoot()));
+
+        Button categoriesBtn = createMenuButton("Categories");
+        categoriesBtn.setOnAction(e -> root.setCenter(viewCategories.getRoot()));
+
         Button dashboardButton = createMenuButton("Dashboard");
+        dashboardButton.setOnAction(e -> showPage("About Page"));
+
         Button logoutButton = createMenuButton("Logout");
 
-        homeBtn.setOnAction(e -> showPage("Home Page"));
-        employeesBtn.setOnAction(e -> showPage("DP Table Page"));
 
-        employeesBtn.setOnAction(e -> root.setCenter(viewEmployees.getRoot()));
-        productsBtn.setOnAction(e -> showPage("Connections Page"));
-        dashboardButton.setOnAction(e -> showPage("About Page"));
 
         logoutButton.setOnAction(e ->{
             Login login = new Login();
@@ -74,7 +89,14 @@ public class ManagerView {
 
         VBox topButtons = new VBox(15);
         topButtons.setAlignment(Pos.CENTER);
-        topButtons.getChildren().addAll(homeBtn, employeesBtn, productsBtn, dashboardButton);
+        topButtons.getChildren().addAll(
+                homeBtn,
+                employeesBtn,
+                supplierBtn,
+                categoriesBtn,
+                productsBtn,
+                dashboardButton
+        );
 
         VBox bottomButtons = new VBox();
         bottomButtons.setAlignment(Pos.BOTTOM_CENTER);

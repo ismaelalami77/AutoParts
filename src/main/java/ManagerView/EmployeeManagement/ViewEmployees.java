@@ -142,13 +142,6 @@ public class ViewEmployees {
         observableEmployees.addAll(employees);
     }
 
-    public static void refreshTable() {
-        employees.clear();
-        observableEmployees.clear();
-
-        employees.addAll(EmployeeDAO.getAllEmployees());
-        observableEmployees.addAll(employees);
-    }
 
     private void updateAction() {
         Employee selectedEmployee = employeesTable.getSelectionModel().getSelectedItem();
@@ -158,8 +151,8 @@ public class ViewEmployees {
             return;
         }
 
-        // updateEmployeeScene.setEmployee(selectedEmployee);
-        // updateEmployeeScene.showStage();
+        updateEmployeeScene = new UpdateEmployeeScene(this, selectedEmployee);
+        updateEmployeeScene.showStage();
     }
 
     private void filterTable(String text) {

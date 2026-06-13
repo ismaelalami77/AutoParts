@@ -161,18 +161,4 @@ public class EmployeeDAO {
         }
     }
 
-    public static boolean deleteEmployee(int employeeId) {
-        String sql = "DELETE FROM Employee WHERE employee_id = ?";
-
-        try (Connection con = DBUtil.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setInt(1, employeeId);
-            return ps.executeUpdate() > 0;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
 }

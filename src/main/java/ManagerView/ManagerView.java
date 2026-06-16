@@ -2,12 +2,12 @@ package ManagerView;
 
 import Login.Login;
 import Login.User;
+import ManagerView.BranchManagement.ViewBranches;
 import ManagerView.CategoryManagement.ViewCategories;
-import ManagerView.EmployeeManagement.Employee;
 import ManagerView.EmployeeManagement.ViewEmployees;
 import ManagerView.ProductManagement.ViewProducts;
 import ManagerView.SupplierManagement.ViewSuppliers;
-import com.mysql.cj.log.Log;
+import ManagerView.WarehouseManagement.ViewWarehouses;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -26,6 +26,8 @@ public class ManagerView {
     private ViewSuppliers viewSuppliers = new ViewSuppliers();
     private ViewProducts viewProducts = new ViewProducts();
     private ViewCategories viewCategories = new ViewCategories();
+    private ViewBranches viewBranches = new ViewBranches();
+    private ViewWarehouses viewWarehouses = new ViewWarehouses();
 
     public ManagerView(User user) {
         root = new BorderPane();
@@ -61,12 +63,11 @@ public class ManagerView {
         Button homeBtn = createMenuButton("Home");
         homeBtn.setOnAction(e -> showPage("Home Page"));
 
-
         Button employeesBtn = createMenuButton("Employees");
         employeesBtn.setOnAction(e -> root.setCenter(viewEmployees.getRoot()));
 
-        Button supplierBtn = createMenuButton("Suppliers");
-        supplierBtn.setOnAction(e -> root.setCenter(viewSuppliers.getRoot()));
+        Button suppliersBtn = createMenuButton("Suppliers");
+        suppliersBtn.setOnAction(e -> root.setCenter(viewSuppliers.getRoot()));
 
         Button productsBtn = createMenuButton("Products");
         productsBtn.setOnAction(e -> root.setCenter(viewProducts.getRoot()));
@@ -74,8 +75,14 @@ public class ManagerView {
         Button categoriesBtn = createMenuButton("Categories");
         categoriesBtn.setOnAction(e -> root.setCenter(viewCategories.getRoot()));
 
+        Button branchesBtn = createMenuButton("Branches");
+        branchesBtn.setOnAction(e -> root.setCenter(viewBranches.getRoot()));
+
         Button dashboardButton = createMenuButton("Dashboard");
         dashboardButton.setOnAction(e -> showPage("About Page"));
+
+        Button warehousesBtn = createMenuButton("Warehouses");
+        warehousesBtn.setOnAction(e -> root.setCenter(viewWarehouses.getRoot()));
 
         Button logoutButton = createMenuButton("Logout");
 
@@ -92,7 +99,9 @@ public class ManagerView {
         topButtons.getChildren().addAll(
                 homeBtn,
                 employeesBtn,
-                supplierBtn,
+                branchesBtn,
+                warehousesBtn,
+                suppliersBtn,
                 categoriesBtn,
                 productsBtn,
                 dashboardButton

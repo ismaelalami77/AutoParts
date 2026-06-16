@@ -13,11 +13,15 @@ module com.example.autoparts {
 
     exports ManagerView.EmployeeManagement;
     exports ManagerView.SupplierManagement;
-    exports ManagerView.ProductManagement;
     exports ManagerView.CategoryManagement;
+    exports ManagerView.ProductManagement;
+    exports ManagerView.BranchManagement;
+    exports ManagerView.WarehouseManagement;
 
     opens ManagerView.EmployeeManagement to javafx.base;
     opens ManagerView.SupplierManagement to javafx.base;
-    opens ManagerView.ProductManagement to javafx.base;
     opens ManagerView.CategoryManagement to javafx.base;
+    opens ManagerView.ProductManagement to javafx.base;
+    opens ManagerView.BranchManagement to javafx.base;
+    opens ManagerView.WarehouseManagement to javafx.base;
 }

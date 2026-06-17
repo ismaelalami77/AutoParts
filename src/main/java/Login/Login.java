@@ -1,6 +1,7 @@
 package Login;
 
 import Connection.UserDAO;
+import EmployeeView.EmployeeView;
 import ManagerView.ManagerView;
 import com.example.autoparts.UIHelperC;
 import javafx.geometry.Insets;
@@ -86,8 +87,11 @@ public class Login {
         if ("MANAGER".equalsIgnoreCase(u.getRole())) {
             new ManagerView(u).showStage();
             stage.close();
+        } else if ("EMPLOYEE".equalsIgnoreCase(u.getRole())) {
+            new EmployeeView(u).showStage();
+            stage.close();
         } else {
-            UIHelperC.showAlert(Alert.AlertType.ERROR, "Only manager login is available now");
+            UIHelperC.showAlert(Alert.AlertType.ERROR, "Unknown user role");
         }
     }
     public void showStage() {

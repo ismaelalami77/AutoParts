@@ -7,9 +7,10 @@ module com.example.autoparts {
     opens com.example.autoparts to javafx.fxml;
     exports com.example.autoparts;
 
-    exports ManagerView;
     exports Login;
     exports Connection;
+    exports ManagerView;
+    exports EmployeeView;
 
     exports ManagerView.EmployeeManagement;
     exports ManagerView.SupplierManagement;
@@ -24,4 +25,6 @@ module com.example.autoparts {
     opens ManagerView.ProductManagement to javafx.base;
     opens ManagerView.BranchManagement to javafx.base;
     opens ManagerView.WarehouseManagement to javafx.base;
+
+    opens EmployeeView to javafx.base;
 }

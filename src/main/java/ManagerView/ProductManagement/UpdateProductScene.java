@@ -1,12 +1,17 @@
 package ManagerView.ProductManagement;
 
+import Connection.CategoryDAO;
 import Connection.ProductDAO;
+import Connection.SupplierDAO;
+import ManagerView.CategoryManagement.Category;
+import ManagerView.SupplierManagement.Supplier;
 import com.example.autoparts.UIHelperC;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -27,11 +32,12 @@ public class UpdateProductScene {
     private Text updateProductText;
 
     private TextField productNameField;
-    private TextField categoryIdField;
-    private TextField supplierIdField;
+    private ComboBox<Category> categoryComboBox;
+    private ComboBox<Supplier> supplierComboBox;
     private TextField costPriceField;
     private TextField sellingPriceField;
     private TextField descriptionField;
+    private TextField quantityField;
 
     private Button updateProductButton;
     private Button cancelButton;
@@ -57,10 +63,21 @@ public class UpdateProductScene {
         grid.setVgap(15);
 
         productNameField = UIHelperC.createStyledTextField("Product Name");
-        categoryIdField = UIHelperC.createStyledTextField("Category ID");
-        supplierIdField = UIHelperC.createStyledTextField("Supplier ID");
+        categoryComboBox = new ComboBox<>();
+        categoryComboBox.setPromptText("Choose Category");
+        categoryComboBox.getItems().addAll(CategoryDAO.getAllCategories());
+        categoryComboBox.setPrefSize(250, 44);
+        categoryComboBox.setMaxWidth(250);
+
+        supplierComboBox = new ComboBox<>();
+        supplierComboBox.setPromptText("Choose Supplier");
+        supplierComboBox.getItems().addAll(SupplierDAO.getAllSuppliers());
+        supplierComboBox.setPrefSize(250, 44);
+        supplierComboBox.setMaxWidth(250);
+
         costPriceField = UIHelperC.createStyledTextField("Cost Price");
         sellingPriceField = UIHelperC.createStyledTextField("Selling Price");
+        quantityField = UIHelperC.createStyledTextField("Quantity");
         descriptionField = UIHelperC.createStyledTextField("Description");
 
         fillFields();
@@ -68,11 +85,11 @@ public class UpdateProductScene {
         grid.add(UIHelperC.createInfoText("Product Name:"), 0, 0);
         grid.add(productNameField, 1, 0);
 
-        grid.add(UIHelperC.createInfoText("Category ID:"), 0, 1);
-        grid.add(categoryIdField, 1, 1);
+        grid.add(UIHelperC.createInfoText("Category:"), 0, 1);
+        grid.add(categoryComboBox, 1, 1);
 
-        grid.add(UIHelperC.createInfoText("Supplier ID:"), 0, 2);
-        grid.add(supplierIdField, 1, 2);
+        grid.add(UIHelperC.createInfoText("Supplier:"), 0, 2);
+        grid.add(supplierComboBox, 1, 2);
 
         grid.add(UIHelperC.createInfoText("Cost Price:"), 0, 3);
         grid.add(costPriceField, 1, 3);
@@ -80,8 +97,11 @@ public class UpdateProductScene {
         grid.add(UIHelperC.createInfoText("Selling Price:"), 0, 4);
         grid.add(sellingPriceField, 1, 4);
 
-        grid.add(UIHelperC.createInfoText("Description:"), 0, 5);
-        grid.add(descriptionField, 1, 5);
+        grid.add(UIHelperC.createInfoText("Quantity:"), 0, 5);
+        grid.add(quantityField, 1, 5);
+
+        grid.add(UIHelperC.createInfoText("Description:"), 0, 6);
+        grid.add(descriptionField, 1, 6);
 
         updateProductButton = UIHelperC.createStyledButton("Update");
         cancelButton = UIHelperC.createStyledButton("Cancel");
@@ -96,7 +116,7 @@ public class UpdateProductScene {
         root.setCenter(centerVbox);
 
         stage = new Stage();
-        scene = new Scene(root, 750, 650);
+        scene = new Scene(root, 720, 620);
 
         scene.getStylesheets().add(
                 getClass().getResource("/com/example/autoparts/style.css").toExternalForm()
@@ -108,43 +128,51 @@ public class UpdateProductScene {
         cancelButton.setOnAction(e -> stage.close());
         updateProductButton.setOnAction(e -> updateProduct());
 
-        productNameField.setOnAction(e -> categoryIdField.requestFocus());
-        categoryIdField.setOnAction(e -> supplierIdField.requestFocus());
-        supplierIdField.setOnAction(e -> costPriceField.requestFocus());
+        productNameField.setOnAction(e -> categoryComboBox.requestFocus());
+        categoryComboBox.setOnAction(e -> supplierComboBox.requestFocus());
+        supplierComboBox.setOnAction(e -> costPriceField.requestFocus());
         costPriceField.setOnAction(e -> sellingPriceField.requestFocus());
-        sellingPriceField.setOnAction(e -> descriptionField.requestFocus());
+        sellingPriceField.setOnAction(e -> quantityField.requestFocus());
+        quantityField.setOnAction(e -> descriptionField.requestFocus());
         descriptionField.setOnAction(e -> updateProduct());
     }
 
     private void fillFields() {
         productNameField.setText(product.getProductName());
-        categoryIdField.setText(String.valueOf(product.getCategoryId()));
-        supplierIdField.setText(String.valueOf(product.getSupplierId()));
+        selectCategory(product.getCategoryId());
+        selectSupplier(product.getSupplierId());
         costPriceField.setText(String.valueOf(product.getCostPrice()));
         sellingPriceField.setText(String.valueOf(product.getSellingPrice()));
         descriptionField.setText(product.getDescription());
+        quantityField.setText(String.valueOf(product.getQuantity()));
     }
 
     private void updateProduct() {
         String productName = productNameField.getText().trim();
-        String categoryIdText = categoryIdField.getText().trim();
-        String supplierIdText = supplierIdField.getText().trim();
+        Category selectedCategory = categoryComboBox.getValue();
+        Supplier selectedSupplier = supplierComboBox.getValue();
         String costPriceText = costPriceField.getText().trim();
         String sellingPriceText = sellingPriceField.getText().trim();
         String description = descriptionField.getText().trim();
+        String quantityText = quantityField.getText().trim();
+
+        if (quantityText.isEmpty()) {
+            UIHelperC.showAlert(Alert.AlertType.WARNING, "Please enter quantity!");
+            return;
+        }
 
         if (productName.isEmpty()) {
             UIHelperC.showAlert(Alert.AlertType.WARNING, "Please enter product name!");
             return;
         }
 
-        if (categoryIdText.isEmpty()) {
-            UIHelperC.showAlert(Alert.AlertType.WARNING, "Please enter category ID!");
+        if (selectedCategory == null) {
+            UIHelperC.showAlert(Alert.AlertType.WARNING, "Please choose a category!");
             return;
         }
 
-        if (supplierIdText.isEmpty()) {
-            UIHelperC.showAlert(Alert.AlertType.WARNING, "Please enter supplier ID!");
+        if (selectedSupplier == null) {
+            UIHelperC.showAlert(Alert.AlertType.WARNING, "Please choose a supplier!");
             return;
         }
 
@@ -158,22 +186,21 @@ public class UpdateProductScene {
             return;
         }
 
-        int categoryId;
-        int supplierId;
+        int categoryId = selectedCategory.getCategoryId();
+        int supplierId = selectedSupplier.getSupplierId();
         double costPrice;
         double sellingPrice;
+        int quantity;
 
         try {
-            categoryId = Integer.parseInt(categoryIdText);
+            quantity = Integer.parseInt(quantityText);
         } catch (NumberFormatException e) {
-            UIHelperC.showAlert(Alert.AlertType.WARNING, "Category ID must be a number!");
+            UIHelperC.showAlert(Alert.AlertType.WARNING, "Quantity must be a number!");
             return;
         }
 
-        try {
-            supplierId = Integer.parseInt(supplierIdText);
-        } catch (NumberFormatException e) {
-            UIHelperC.showAlert(Alert.AlertType.WARNING, "Supplier ID must be a number!");
+        if (quantity < 0) {
+            UIHelperC.showAlert(Alert.AlertType.WARNING, "Quantity cannot be negative!");
             return;
         }
 
@@ -200,12 +227,13 @@ public class UpdateProductScene {
                 product.getProductId(),
                 productName,
                 categoryId,
-                product.getCategoryName(),
+                selectedCategory.getCategoryName(),
                 supplierId,
-                product.getSupplierName(),
+                selectedSupplier.getSupplierName(),
                 costPrice,
                 sellingPrice,
-                description
+                description,
+                quantity
         );
 
         boolean updated = ProductDAO.updateProduct(updatedProduct);
@@ -215,7 +243,25 @@ public class UpdateProductScene {
             UIHelperC.showAlert(Alert.AlertType.INFORMATION, "Product updated successfully!");
             stage.close();
         } else {
-            UIHelperC.showAlert(Alert.AlertType.ERROR, "Product could not be updated! Check category ID and supplier ID.");
+            UIHelperC.showAlert(Alert.AlertType.ERROR, "Product could not be updated! Check the selected category and supplier.");
+        }
+    }
+
+    private void selectCategory(int categoryId) {
+        for (Category category : categoryComboBox.getItems()) {
+            if (category.getCategoryId() == categoryId) {
+                categoryComboBox.setValue(category);
+                return;
+            }
+        }
+    }
+
+    private void selectSupplier(int supplierId) {
+        for (Supplier supplier : supplierComboBox.getItems()) {
+            if (supplier.getSupplierId() == supplierId) {
+                supplierComboBox.setValue(supplier);
+                return;
+            }
         }
     }
 

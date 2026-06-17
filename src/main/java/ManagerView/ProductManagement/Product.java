@@ -11,10 +11,11 @@ public class Product {
     private double costPrice;
     private double sellingPrice;
     private String description;
+    private int quantity;
 
     public Product(int productId, String productName, int categoryId, String categoryName,
                    int supplierId, String supplierName, double costPrice,
-                   double sellingPrice, String description) {
+                   double sellingPrice, String description, int quantity) {
         this.productId = productId;
         this.productName = productName;
         this.categoryId = categoryId;
@@ -24,6 +25,15 @@ public class Product {
         this.costPrice = costPrice;
         this.sellingPrice = sellingPrice;
         this.description = description;
+        this.quantity = quantity;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public int getProductId() {

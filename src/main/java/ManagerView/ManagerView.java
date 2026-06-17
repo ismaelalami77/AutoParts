@@ -14,6 +14,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -28,6 +29,7 @@ public class ManagerView {
     private ViewCategories viewCategories = new ViewCategories();
     private ViewBranches viewBranches = new ViewBranches();
     private ViewWarehouses viewWarehouses = new ViewWarehouses();
+    private ManagerDashboardView dashboardView = new ManagerDashboardView();
 
     public ManagerView(User user) {
         root = new BorderPane();
@@ -35,15 +37,12 @@ public class ManagerView {
 
         VBox sidebar = createSidebar();
 
-        Label homePage = new Label("Home Page");
-        homePage.setStyle("-fx-font-size: 30px;");
-
         root.setLeft(sidebar);
-        root.setCenter(homePage);
+        showDashboard();
 
-        Scene scene = new Scene(root, 900, 600);
+        Scene scene = new Scene(root, 1100, 720);
         scene.getStylesheets().add(
-                getClass().getResource("/com/example/AutoParts/style.css").toExternalForm()
+                getClass().getResource("/com/example/autoparts/style.css").toExternalForm()
         );
 
         String userFullName = user.getFullName();
@@ -56,12 +55,10 @@ public class ManagerView {
         sidebar.setPadding(new Insets(20));
         sidebar.setPrefWidth(200);
         sidebar.setAlignment(Pos.TOP_CENTER);
-
-        sidebar.setStyle("-fx-background-color: #2c3e50;" +
-                "-fx-border-color: white;");
+        sidebar.getStyleClass().add("app-sidebar");
 
         Button homeBtn = createMenuButton("Home");
-        homeBtn.setOnAction(e -> showPage("Home Page"));
+        homeBtn.setOnAction(e -> showDashboard());
 
         Button employeesBtn = createMenuButton("Employees");
         employeesBtn.setOnAction(e -> root.setCenter(viewEmployees.getRoot()));
@@ -79,7 +76,7 @@ public class ManagerView {
         branchesBtn.setOnAction(e -> root.setCenter(viewBranches.getRoot()));
 
         Button dashboardButton = createMenuButton("Dashboard");
-        dashboardButton.setOnAction(e -> showPage("About Page"));
+        dashboardButton.setOnAction(e -> showDashboard());
 
         Button warehousesBtn = createMenuButton("Warehouses");
         warehousesBtn.setOnAction(e -> root.setCenter(viewWarehouses.getRoot()));
@@ -113,7 +110,7 @@ public class ManagerView {
 
         sidebar.getChildren().addAll(topButtons, bottomButtons);
 
-        VBox.setVgrow(bottomButtons, javafx.scene.layout.Priority.ALWAYS);
+        VBox.setVgrow(bottomButtons, Priority.ALWAYS);
 
 
 
@@ -124,27 +121,7 @@ public class ManagerView {
         Button button = new Button(text);
         button.setPrefWidth(160);
         button.setPrefHeight(40);
-
-        String normalStyle =
-                "-fx-background-color: #2c3e50;" +
-                        "-fx-text-fill: white;" +
-                        "-fx-font-size: 14px;" +
-                        "-fx-background-radius: 8;" +
-                        "-fx-border-radius: 8;" +
-                        "-fx-border-color: white;";
-
-        String hoverStyle =
-                "-fx-background-color: #34495e;" +
-                        "-fx-text-fill: white;" +
-                        "-fx-font-size: 14px;" +
-                        "-fx-background-radius: 8;" +
-                        "-fx-border-radius: 8;" +
-                        "-fx-border-color: white;";
-
-        button.setStyle(normalStyle);
-
-        button.setOnMouseEntered(e -> button.setStyle(hoverStyle));
-        button.setOnMouseExited(e -> button.setStyle(normalStyle));
+        button.getStyleClass().add("sidebar-button");
 
         return button;
     }
@@ -155,7 +132,12 @@ public class ManagerView {
 
     private void showPage(String pageName) {
         Label page = new Label(pageName);
-        page.setStyle("-fx-font-size: 30px;");
+        page.getStyleClass().add("home-title");
         root.setCenter(page);
+    }
+
+    private void showDashboard() {
+        dashboardView.loadDashboard();
+        root.setCenter(dashboardView.getRoot());
     }
 }

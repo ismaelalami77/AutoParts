@@ -77,6 +77,31 @@ INSERT INTO `Category` VALUES (1,'Engine Parts','Engine related spare parts'),(2
 UNLOCK TABLES;
 
 --
+-- Table structure for table `Customer`
+--
+
+DROP TABLE IF EXISTS `Customer`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `Customer` (
+  `customer_id` int NOT NULL AUTO_INCREMENT,
+  `customer_name` varchar(100) NOT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`customer_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Customer`
+--
+
+LOCK TABLES `Customer` WRITE;
+/*!40000 ALTER TABLE `Customer` DISABLE KEYS */;
+INSERT INTO `Customer` VALUES (1,'ismael','0592342235'),(2,'ihab','0599111111');
+/*!40000 ALTER TABLE `Customer` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `Employee`
 --
 
@@ -111,6 +136,35 @@ INSERT INTO `Employee` VALUES (1,2,'Ihab Fawaqa','Employee',3500.00,'0599000000'
 UNLOCK TABLES;
 
 --
+-- Table structure for table `Payment`
+--
+
+DROP TABLE IF EXISTS `Payment`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `Payment` (
+  `payment_id` int NOT NULL AUTO_INCREMENT,
+  `order_id` int NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `payment_method` varchar(30) NOT NULL,
+  `payment_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`payment_id`),
+  KEY `fk_payment_order` (`order_id`),
+  CONSTRAINT `fk_payment_order` FOREIGN KEY (`order_id`) REFERENCES `Sales_Order` (`order_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Payment`
+--
+
+LOCK TABLES `Payment` WRITE;
+/*!40000 ALTER TABLE `Payment` DISABLE KEYS */;
+INSERT INTO `Payment` VALUES (1,1,3000.00,'Cash','2026-06-17 19:48:41'),(2,2,300.00,'Cash','2026-06-17 20:18:30'),(3,3,450.00,'Card','2026-06-17 20:24:03');
+/*!40000 ALTER TABLE `Payment` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `Product`
 --
 
@@ -123,10 +177,11 @@ CREATE TABLE `Product` (
   `category_id` int DEFAULT NULL,
   `selling_price` decimal(10,2) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
+  `quantity` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`product_id`),
   KEY `fk_product_category` (`category_id`),
   CONSTRAINT `fk_product_category` FOREIGN KEY (`category_id`) REFERENCES `Category` (`category_id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -135,8 +190,71 @@ CREATE TABLE `Product` (
 
 LOCK TABLES `Product` WRITE;
 /*!40000 ALTER TABLE `Product` DISABLE KEYS */;
-INSERT INTO `Product` VALUES (2,'axe',1,600.00,'');
+INSERT INTO `Product` VALUES (2,'axe',1,150.00,'',28);
 /*!40000 ALTER TABLE `Product` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `Sales_Order`
+--
+
+DROP TABLE IF EXISTS `Sales_Order`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `Sales_Order` (
+  `order_id` int NOT NULL AUTO_INCREMENT,
+  `customer_id` int DEFAULT NULL,
+  `employee_user_id` int NOT NULL,
+  `order_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `total_amount` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`order_id`),
+  KEY `fk_sales_customer` (`customer_id`),
+  KEY `fk_sales_employee_user` (`employee_user_id`),
+  CONSTRAINT `fk_sales_customer` FOREIGN KEY (`customer_id`) REFERENCES `Customer` (`customer_id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_sales_employee_user` FOREIGN KEY (`employee_user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Sales_Order`
+--
+
+LOCK TABLES `Sales_Order` WRITE;
+/*!40000 ALTER TABLE `Sales_Order` DISABLE KEYS */;
+INSERT INTO `Sales_Order` VALUES (1,1,2,'2026-06-17 19:48:41',3000.00),(2,1,2,'2026-06-17 20:18:30',300.00),(3,2,2,'2026-06-17 20:24:03',450.00);
+/*!40000 ALTER TABLE `Sales_Order` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `Sales_Order_Item`
+--
+
+DROP TABLE IF EXISTS `Sales_Order_Item`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `Sales_Order_Item` (
+  `order_item_id` int NOT NULL AUTO_INCREMENT,
+  `order_id` int NOT NULL,
+  `product_id` int NOT NULL,
+  `quantity` int NOT NULL,
+  `unit_price` decimal(10,2) NOT NULL,
+  `subtotal` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`order_item_id`),
+  KEY `fk_sales_item_order` (`order_id`),
+  KEY `fk_sales_item_product` (`product_id`),
+  CONSTRAINT `fk_sales_item_order` FOREIGN KEY (`order_id`) REFERENCES `Sales_Order` (`order_id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_sales_item_product` FOREIGN KEY (`product_id`) REFERENCES `Product` (`product_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Sales_Order_Item`
+--
+
+LOCK TABLES `Sales_Order_Item` WRITE;
+/*!40000 ALTER TABLE `Sales_Order_Item` DISABLE KEYS */;
+INSERT INTO `Sales_Order_Item` VALUES (1,1,2,5,600.00,3000.00),(2,2,2,2,150.00,300.00),(3,3,2,3,150.00,450.00);
+/*!40000 ALTER TABLE `Sales_Order_Item` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -190,7 +308,7 @@ CREATE TABLE `Supplier_Product` (
 
 LOCK TABLES `Supplier_Product` WRITE;
 /*!40000 ALTER TABLE `Supplier_Product` DISABLE KEYS */;
-INSERT INTO `Supplier_Product` VALUES (1,2,500.00);
+INSERT INTO `Supplier_Product` VALUES (1,2,50.00);
 /*!40000 ALTER TABLE `Supplier_Product` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -209,7 +327,7 @@ CREATE TABLE `users` (
   `full_name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -257,4 +375,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-06-16 19:27:49
+-- Dump completed on 2026-06-17 20:25:21

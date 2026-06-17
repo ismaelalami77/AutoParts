@@ -6,11 +6,11 @@ import javafx.scene.text.Text;
 
 public class UIHelperC {
 
-    private static final String fontFamily = "Times New Roman";
+    private static final String fontFamily = "Segoe UI";
     private static final double fieldWidth = 250;
-    private static final double fieldHeight = 50;
-    private static final String accentColor = "#2c3e50";
-    private static final String hoverColor = "#34495e";
+    private static final double fieldHeight = 44;
+    private static final String accentColor = "#2f6da3";
+    private static final String hoverColor = "#255b8a";
 
 
     public static void showAlert(Alert.AlertType alertType, String message) {
@@ -25,7 +25,8 @@ public class UIHelperC {
         Text myText = new Text(content);
         myText.setStyle("-fx-font-family: '" + fontFamily + "'; " +
                 "-fx-font-weight: bold; " +
-                "-fx-font-size: 40px;");
+                "-fx-fill: #1f2d3d; " +
+                "-fx-font-size: 34px;");
         return myText;
     }
 
@@ -40,22 +41,22 @@ public class UIHelperC {
 
         String style = "-fx-background-color: " + accentColor + "; " +
                 "-fx-text-fill: white; " +
-                "-fx-font-size: 20px; " +
+                "-fx-font-size: 16px; " +
                 "-fx-font-family: '" + fontFamily + "';" +
                 "-fx-font-weight: bold; " +
-                "-fx-background-radius: 30px; " +
-                "-fx-border-radius: 30px; " +
+                "-fx-background-radius: 10px; " +
+                "-fx-border-radius: 10px; " +
                 "-fx-border-color: " + accentColor + "; " +
                 "-fx-background-insets: 0;" +
                 "-fx-padding: 0;";
 
         String hoverStyle = "-fx-background-color: " + hoverColor + "; " +
                 "-fx-text-fill: white; " +
-                "-fx-font-size: 20px; " +
+                "-fx-font-size: 16px; " +
                 "-fx-font-family: '" + fontFamily + "';" +
                 "-fx-font-weight: bold; " +
-                "-fx-background-radius: 30px; " +
-                "-fx-border-radius: 30px; " +
+                "-fx-background-radius: 10px; " +
+                "-fx-border-radius: 10px; " +
                 "-fx-border-color: " + hoverColor + "; " +
                 "-fx-background-insets: 0;" +
                 "-fx-padding: 0;";
@@ -82,13 +83,14 @@ public class UIHelperC {
         textField.setMinSize(fieldWidth, fieldHeight);
         textField.setMaxSize(fieldWidth, fieldHeight);
 
-        textField.setStyle("-fx-background-radius: 30px; " +
+        textField.setStyle("-fx-background-radius: 10px; " +
                 "-fx-background-color: white; " +
                 "-fx-font-family: '" + fontFamily + "'; " +
-                "-fx-font-size: 20px; " +
-                "-fx-text-fill: black; " +
-                "-fx-border-color: " + accentColor + "; " +
-                "-fx-border-radius: 30px; " +
+                "-fx-font-size: 15px; " +
+                "-fx-text-fill: #1f2d3d; " +
+                "-fx-prompt-text-fill: #7b8a97; " +
+                "-fx-border-color: #d7e1ea; " +
+                "-fx-border-radius: 10px; " +
                 "-fx-background-insets: 0;");
 
         return textField;
@@ -103,13 +105,14 @@ public class UIHelperC {
         passField.setMinSize(fieldWidth, fieldHeight);
         passField.setMaxSize(fieldWidth, fieldHeight);
 
-        passField.setStyle("-fx-background-radius: 30px; " +
+        passField.setStyle("-fx-background-radius: 10px; " +
                 "-fx-background-color: white; " +
                 "-fx-font-family: '" + fontFamily + "'; " +
-                "-fx-font-size: 20px; " +
-                "-fx-text-fill: black; " +
-                "-fx-border-color: " + accentColor + "; " +
-                "-fx-border-radius: 30px; " +
+                "-fx-font-size: 15px; " +
+                "-fx-text-fill: #1f2d3d; " +
+                "-fx-prompt-text-fill: #7b8a97; " +
+                "-fx-border-color: #d7e1ea; " +
+                "-fx-border-radius: 10px; " +
                 "-fx-background-insets: 0;");
 
         return passField;
@@ -118,22 +121,23 @@ public class UIHelperC {
     public static Text createInfoText(String content) {
         Text infoText = new Text(content);
         infoText.setStyle("-fx-font-family: '" + fontFamily + "'; " +
-                "-fx-font-weight: bold; " +
-                "-fx-font-size: 28px;");
+                "-fx-fill: #334155; " +
+                "-fx-font-weight: 700; " +
+                "-fx-font-size: 16px;");
         return infoText;
     }
 
     public static ComboBox<String> createComboBox() {
         ComboBox<String> comboBox = new ComboBox<>();
 
-        comboBox.setPrefSize(200, 60);
-        comboBox.setStyle("-fx-background-radius: 15px; " +
+        comboBox.setPrefSize(200, 44);
+        comboBox.setStyle("-fx-background-radius: 10px; " +
                 "-fx-background-color: white; " +
                 "-fx-font-family: '" + fontFamily + "';" +
-                "-fx-border-color: " + accentColor + "; " +
-                "-fx-border-radius: 15px; " +
-                "-fx-font-size: 20px; " +
-                "-fx-text-fill: black;");
+                "-fx-border-color: #d7e1ea; " +
+                "-fx-border-radius: 10px; " +
+                "-fx-font-size: 15px; " +
+                "-fx-text-fill: #1f2d3d;");
 
         return comboBox;
     }

@@ -133,49 +133,49 @@ com.example.autoparts.Main
 Developed by **Ismael Alami**
 COMP333 Database Project
 
-## 📸 Screenshots
+## 📸 screenshots
 
 ### 🔐 Login
-![Login](ScreenShots/Login.png)
+![Login](screenshots/Login.png)
 
 ### 📊 Dashboard
-![Dashboard](ScreenShots/Dashboard.png)
+![Dashboard](screenshots/Dashboard.png)
 
 ### 🏢 Branches
-![Branches](ScreenShots/Branches.png)
+![Branches](screenshots/Branches.png)
 
 ### 🏢 Branch Inventory
-![Branch Inventory](ScreenShots/branchInv.png)
+![Branch Inventory](screenshots/branchInv.png)
 
 ### 🔗 Branch Products
-![Branch Products](ScreenShots/branchProducts.png)
+![Branch Products](screenshots/branchProducts.png)
 
 ### 💵 Cashier
-![Cashier](ScreenShots/cash.png)
+![Cashier](screenshots/cash.png)
 
 ### 🗂️ Categories
-![Categories](ScreenShots/categories.png)
+![Categories](screenshots/categories.png)
 
 ### 👤 Customers
-![Customers](ScreenShots/Customers.png)
+![Customers](screenshots/Customers.png)
 
 ### 👥 Manage Employees
-![Manage Employees](ScreenShots/ManageEmployees.png)
+![Manage Employees](screenshots/ManageEmployees.png)
 
 ### 📦 Products
-![Products](ScreenShots/products.png)
+![Products](screenshots/products.png)
 
 ### 🧾 Receipts
-![Receipts](ScreenShots/reciepts.png)
+![Receipts](screenshots/reciepts.png)
 
 ### 📈 Reports
-![Reports](ScreenShots/reports.png)
+![Reports](screenshots/reports.png)
 
 ### 🚚 Suppliers
-![Suppliers](ScreenShots/suppliers.png)
+![Suppliers](screenshots/suppliers.png)
 
 ### 🏬 Warehouse Inventory
-![Warehouse Inventory](ScreenShots/warehouseInv.png)
+![Warehouse Inventory](screenshots/warehouseInv.png)
 
 ### 🏬 Warehouses
-![Warehouses](ScreenShots/warehouses.png)
+![Warehouses](screenshots/warehouses.png)

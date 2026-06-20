@@ -90,4 +90,32 @@ public class SupplierDAO {
         }
     }
 
+    public static boolean phoneExists(String phone) {
+        return phoneExistsForOtherSupplier(phone, 0);
+    }
+
+    public static boolean phoneExistsForOtherSupplier(String phone, int supplierId) {
+        String sql = """
+                SELECT supplier_id
+                FROM Supplier
+                WHERE phone = ?
+                  AND supplier_id <> ?
+                """;
+
+        try (Connection con = DBUtil.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, phone);
+            ps.setInt(2, supplierId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

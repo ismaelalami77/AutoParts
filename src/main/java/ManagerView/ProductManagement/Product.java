@@ -10,12 +10,12 @@ public class Product {
     private String supplierName;
     private double costPrice;
     private double sellingPrice;
-    private String description;
+    private String brand;
     private int quantity;
 
     public Product(int productId, String productName, int categoryId, String categoryName,
                    int supplierId, String supplierName, double costPrice,
-                   double sellingPrice, String description, int quantity) {
+                   double sellingPrice, String brand, int quantity) {
         this.productId = productId;
         this.productName = productName;
         this.categoryId = categoryId;
@@ -24,7 +24,7 @@ public class Product {
         this.supplierName = supplierName;
         this.costPrice = costPrice;
         this.sellingPrice = sellingPrice;
-        this.description = description;
+        this.brand = brand;
         this.quantity = quantity;
     }
 
@@ -100,11 +100,16 @@ public class Product {
         this.sellingPrice = sellingPrice;
     }
 
-    public String getDescription() {
-        return description;
+    public String getBrand() {
+        return brand;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    @Override
+    public String toString() {
+        return productName;
     }
 }

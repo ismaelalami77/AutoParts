@@ -43,9 +43,9 @@ public class BranchDAO {
 
     public static boolean insertBranch(Branch branch) {
         String sql = """
-                INSERT INTO Branch (branch_name, city, address, phone)
-                VALUES (?, ?, ?, ?)
-                """;
+            INSERT INTO Branch (branch_name, city, address, phone)
+            VALUES (?, ?, ?, ?)
+            """;
 
         try (Connection con = DBUtil.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -57,8 +57,18 @@ public class BranchDAO {
 
             return ps.executeUpdate() > 0;
 
+        } catch (java.sql.SQLIntegrityConstraintViolationException e) {
+
+            if (e.getMessage().contains("unique_branch_phone")) {
+                System.out.println("Phone number already exists.");
+            } else {
+                System.out.println("Duplicate or constraint error.");
+            }
+
+            return false;
+
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error adding branch: " + e.getMessage());
             return false;
         }
     }
@@ -83,6 +93,56 @@ public class BranchDAO {
             ps.setInt(5, branch.getBranchId());
 
             return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean branchExists(int branchId) {
+        String sql = """
+                SELECT branch_id
+                FROM Branch
+                WHERE branch_id = ?
+                """;
+
+        try (Connection con = DBUtil.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, branchId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean phoneExists(String phone) {
+        return phoneExistsForOtherBranch(phone, 0);
+    }
+
+    public static boolean phoneExistsForOtherBranch(String phone, int branchId) {
+        String sql = """
+                SELECT branch_id
+                FROM Branch
+                WHERE phone = ?
+                  AND branch_id <> ?
+                """;
+
+        try (Connection con = DBUtil.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, phone);
+            ps.setInt(2, branchId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,6 +1,7 @@
 package EmployeeView;
 
 import Connection.ProductDAO;
+import Login.User;
 import ManagerView.ProductManagement.Product;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,8 +25,10 @@ public class EmployeeProductsView {
     private BorderPane root;
     private TableView<Product> productsTable;
     private TextField searchTextField;
+    private User user;
 
-    public EmployeeProductsView() {
+    public EmployeeProductsView(User user) {
+        this.user = user;
         root = new BorderPane();
 
         VBox centerVBox = new VBox(15);
@@ -49,14 +52,14 @@ public class EmployeeProductsView {
         TableColumn<Product, String> supplierCol = new TableColumn<>("Supplier");
         supplierCol.setCellValueFactory(new PropertyValueFactory<>("supplierName"));
 
-        TableColumn<Product, Double> sellingPriceCol = new TableColumn<>("Price");
+        TableColumn<Product, Double> sellingPriceCol = new TableColumn<>("Unit Price");
         sellingPriceCol.setCellValueFactory(new PropertyValueFactory<>("sellingPrice"));
 
         TableColumn<Product, Integer> quantityCol = new TableColumn<>("Qty");
         quantityCol.setCellValueFactory(new PropertyValueFactory<>("quantity"));
 
-        TableColumn<Product, String> descriptionCol = new TableColumn<>("Description");
-        descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
+        TableColumn<Product, String> brandCol = new TableColumn<>("Brand");
+        brandCol.setCellValueFactory(new PropertyValueFactory<>("brand"));
 
         productsTable.getColumns().addAll(
                 idCol,
@@ -65,7 +68,7 @@ public class EmployeeProductsView {
                 supplierCol,
                 sellingPriceCol,
                 quantityCol,
-                descriptionCol
+                brandCol
         );
 
         productsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -86,7 +89,7 @@ public class EmployeeProductsView {
         products.clear();
         observableProducts.clear();
 
-        products.addAll(ProductDAO.getAllProducts());
+        products.addAll(ProductDAO.getProductsForBranch(user.getBranchId()));
         observableProducts.addAll(products);
     }
 
@@ -103,12 +106,12 @@ public class EmployeeProductsView {
             String productName = product.getProductName() == null ? "" : product.getProductName().toLowerCase();
             String categoryName = product.getCategoryName() == null ? "" : product.getCategoryName().toLowerCase();
             String supplierName = product.getSupplierName() == null ? "" : product.getSupplierName().toLowerCase();
-            String description = product.getDescription() == null ? "" : product.getDescription().toLowerCase();
+            String brand = product.getBrand() == null ? "" : product.getBrand().toLowerCase();
 
             if (productName.contains(query)
                     || categoryName.contains(query)
                     || supplierName.contains(query)
-                    || description.contains(query)) {
+                    || brand.contains(query)) {
                 filtered.add(product);
             }
         }

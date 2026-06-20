@@ -1,5 +1,6 @@
 package ManagerView.EmployeeManagement;
 
+import Connection.BranchDAO;
 import Connection.EmployeeDAO;
 import com.example.autoparts.UIHelperC;
 import javafx.geometry.Insets;
@@ -16,8 +17,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class AddEmployeeScene {
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private Stage stage;
     private Scene scene;
@@ -67,7 +73,7 @@ public class AddEmployeeScene {
         hireDatePicker = new DatePicker();
         branchIdField = UIHelperC.createStyledTextField("Branch ID");
 
-        hireDatePicker.setPrefSize(250, 50);
+        styleHireDatePicker();
 
         grid.add(UIHelperC.createInfoText("Username:"), 0, 0);
         grid.add(usernameField, 1, 0);
@@ -106,7 +112,7 @@ public class AddEmployeeScene {
         root.setCenter(centerVbox);
 
         stage = new Stage();
-        scene = new Scene(root, 700, 700);
+        scene = new Scene(root, 700, 760);
 
         scene.getStylesheets().add(
                 getClass().getResource("/com/example/autoparts/style.css").toExternalForm()
@@ -114,6 +120,7 @@ public class AddEmployeeScene {
 
         stage.setScene(scene);
         stage.setTitle("Add Employee");
+        stage.setMinHeight(760);
 
         cancelButton.setOnAction(e -> stage.close());
         addEmployeeButton.setOnAction(e -> addEmployee());
@@ -175,6 +182,11 @@ public class AddEmployeeScene {
             return;
         }
 
+        if (EmployeeDAO.phoneExists(phone)) {
+            UIHelperC.showAlert(Alert.AlertType.WARNING, "An employee with this phone number already exists!");
+            return;
+        }
+
         if (hireDatePicker.getValue() == null) {
             UIHelperC.showAlert(Alert.AlertType.WARNING, "Please choose hire date!");
             return;
@@ -202,6 +214,11 @@ public class AddEmployeeScene {
             return;
         }
 
+        if (!BranchDAO.branchExists(branchId)) {
+            UIHelperC.showAlert(Alert.AlertType.WARNING, "No branch found with this ID!");
+            return;
+        }
+
         Employee newEmployee = new Employee(
                 0,
                 fullName,
@@ -225,6 +242,28 @@ public class AddEmployeeScene {
 
     public void showStage() {
         stage.show();
+    }
+
+    private void styleHireDatePicker() {
+        hireDatePicker.setEditable(false);
+        hireDatePicker.setPrefSize(250, 54);
+        hireDatePicker.setMinSize(250, 54);
+        hireDatePicker.setMaxSize(250, 54);
+        hireDatePicker.getEditor().setPrefHeight(54);
+        hireDatePicker.getEditor().setMinHeight(54);
+        hireDatePicker.getEditor().setMaxHeight(54);
+        hireDatePicker.getEditor().setStyle("-fx-padding: 0 12px 0 12px; -fx-font-size: 15px;");
+        hireDatePicker.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(LocalDate date) {
+                return date == null ? "" : DATE_FORMATTER.format(date);
+            }
+
+            @Override
+            public LocalDate fromString(String text) {
+                return text == null || text.isBlank() ? null : LocalDate.parse(text, DATE_FORMATTER);
+            }
+        });
     }
 
     private boolean isValidFullName(String name) {

@@ -142,6 +142,11 @@ public class UpdateBranchScene {
             return;
         }
 
+        if (BranchDAO.phoneExistsForOtherBranch(phone, branch.getBranchId())) {
+            UIHelperC.showAlert(Alert.AlertType.WARNING, "Another branch already uses this phone number!");
+            return;
+        }
+
         Branch updatedBranch = new Branch(
                 branch.getBranchId(),
                 branchName,

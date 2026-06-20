@@ -9,12 +9,10 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -31,27 +29,18 @@ public class Login {
     private PasswordField passField;
     private Button loginButton;
 
-    private ImageView logoView;
-    private Image logoImage;
-
     public Login() {
         root = new BorderPane();
-
-
-        root.setBackground(new Background(new BackgroundFill(Color.web("#ecf0f1"), CornerRadii.EMPTY, Insets.EMPTY)));
-
-        //logoImage = new Image(getClass().getResourceAsStream("/com/example/autoparts/logo.png"));
-        /*logoView = new ImageView(logoImage);
-        logoView.setFitWidth(150);
-        logoView.setPreserveRatio(true);
-        logoView.setSmooth(true);*/
-
+        root.getStyleClass().add("login-root");
 
         container = new VBox();
         container.setAlignment(Pos.CENTER);
-        container.setSpacing(20);
-        container.setPadding(new Insets(30, 40, 30, 40));
+        container.setSpacing(16);
+        container.setPadding(new Insets(34, 40, 34, 40));
+        container.getStyleClass().add("login-card");
 
+        Label brandLabel = new Label("AutoParts");
+        brandLabel.getStyleClass().add("login-brand");
 
         loginText = UIHelperC.createTitleText("Login");
 
@@ -61,12 +50,15 @@ public class Login {
 
         loginButton = UIHelperC.createStyledButton("Login");
 
-        container.getChildren().addAll(loginText, userField, passField, loginButton);
+        container.getChildren().addAll(brandLabel, loginText, userField, passField, loginButton);
 
         root.setCenter(container);
 
         stage = new Stage();
-        scene = new Scene(root, 400, 500);
+        scene = new Scene(root, 430, 500);
+        scene.getStylesheets().add(
+                getClass().getResource("/com/example/autoparts/style.css").toExternalForm()
+        );
         stage.setScene(scene);
         stage.setResizable(false);
 

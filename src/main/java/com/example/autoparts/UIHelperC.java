@@ -9,8 +9,8 @@ public class UIHelperC {
     private static final String fontFamily = "Segoe UI";
     private static final double fieldWidth = 250;
     private static final double fieldHeight = 44;
-    private static final String accentColor = "#2f6da3";
-    private static final String hoverColor = "#255b8a";
+    private static final String accentColor = "#0f766e";
+    private static final String hoverColor = "#0b5f59";
 
 
     public static void showAlert(Alert.AlertType alertType, String message) {
@@ -25,7 +25,7 @@ public class UIHelperC {
         Text myText = new Text(content);
         myText.setStyle("-fx-font-family: '" + fontFamily + "'; " +
                 "-fx-font-weight: bold; " +
-                "-fx-fill: #1f2d3d; " +
+                "-fx-fill: #17211f; " +
                 "-fx-font-size: 34px;");
         return myText;
     }
@@ -89,7 +89,7 @@ public class UIHelperC {
                 "-fx-font-size: 15px; " +
                 "-fx-text-fill: #1f2d3d; " +
                 "-fx-prompt-text-fill: #7b8a97; " +
-                "-fx-border-color: #d7e1ea; " +
+                "-fx-border-color: #d9e2df; " +
                 "-fx-border-radius: 10px; " +
                 "-fx-background-insets: 0;");
 
@@ -121,7 +121,7 @@ public class UIHelperC {
     public static Text createInfoText(String content) {
         Text infoText = new Text(content);
         infoText.setStyle("-fx-font-family: '" + fontFamily + "'; " +
-                "-fx-fill: #334155; " +
+                "-fx-fill: #2f3f3b; " +
                 "-fx-font-weight: 700; " +
                 "-fx-font-size: 16px;");
         return infoText;
@@ -134,55 +134,12 @@ public class UIHelperC {
         comboBox.setStyle("-fx-background-radius: 10px; " +
                 "-fx-background-color: white; " +
                 "-fx-font-family: '" + fontFamily + "';" +
-                "-fx-border-color: #d7e1ea; " +
+                "-fx-border-color: #d9e2df; " +
                 "-fx-border-radius: 10px; " +
                 "-fx-font-size: 15px; " +
                 "-fx-text-fill: #1f2d3d;");
 
         return comboBox;
-    }
-
-    public static Button createMenuButton(String text) {
-        Button btn = new Button(text);
-
-        btn.setPrefHeight(40);
-        btn.setPrefWidth(160);
-
-        // Default style (no background)
-        btn.setStyle("""
-                -fx-background-color: transparent;
-                -fx-text-fill: #00a650;
-                -fx-font-size: 20px;
-                -fx-font-weight: 800;
-                -fx-padding: 0 10 0 10;
-                """);
-
-        // Hover effect
-        btn.setOnMouseEntered(e -> {
-            btn.setCursor(Cursor.HAND);
-            btn.setStyle("""
-                    -fx-background-color: transparent;
-                    -fx-text-fill: #009144;
-                    -fx-font-size: 20px;
-                    -fx-font-weight: 800;
-                    """);
-        });
-
-
-        btn.setOnMouseExited(e -> {
-                    btn.setCursor(Cursor.HAND);
-                    btn.setStyle("""
-                            
-                                    -fx-background-color: transparent;
-                            -fx-text-fill: #00a650;
-                            -fx-font-size: 20px;
-                            -fx-font-weight: 800;
-                            """);
-                }
-        );
-
-
-        return btn;
     }
 
 }

@@ -27,7 +27,6 @@ public class UpdateCategoryScene {
     private Text updateCategoryText;
 
     private TextField categoryNameField;
-    private TextField descriptionField;
 
     private Button updateCategoryButton;
     private Button cancelButton;
@@ -53,15 +52,11 @@ public class UpdateCategoryScene {
         grid.setVgap(15);
 
         categoryNameField = UIHelperC.createStyledTextField("Category Name");
-        descriptionField = UIHelperC.createStyledTextField("Description");
 
         fillFields();
 
         grid.add(UIHelperC.createInfoText("Category Name:"), 0, 0);
         grid.add(categoryNameField, 1, 0);
-
-        grid.add(UIHelperC.createInfoText("Description:"), 0, 1);
-        grid.add(descriptionField, 1, 1);
 
         updateCategoryButton = UIHelperC.createStyledButton("Update");
         cancelButton = UIHelperC.createStyledButton("Cancel");
@@ -88,33 +83,24 @@ public class UpdateCategoryScene {
         cancelButton.setOnAction(e -> stage.close());
         updateCategoryButton.setOnAction(e -> updateCategory());
 
-        categoryNameField.setOnAction(e -> descriptionField.requestFocus());
-        descriptionField.setOnAction(e -> updateCategory());
+        categoryNameField.setOnAction(e -> updateCategory());
     }
 
     private void fillFields() {
         categoryNameField.setText(category.getCategoryName());
-        descriptionField.setText(category.getDescription());
     }
 
     private void updateCategory() {
         String categoryName = categoryNameField.getText().trim();
-        String description = descriptionField.getText().trim();
 
         if (categoryName.isEmpty()) {
             UIHelperC.showAlert(Alert.AlertType.WARNING, "Please enter category name!");
             return;
         }
 
-        if (description.isEmpty()) {
-            UIHelperC.showAlert(Alert.AlertType.WARNING, "Please enter description!");
-            return;
-        }
-
         Category updatedCategory = new Category(
                 category.getCategoryId(),
-                categoryName,
-                description
+                categoryName
         );
 
         boolean updated = CategoryDAO.updateCategory(updatedCategory);

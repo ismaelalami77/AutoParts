@@ -119,6 +119,11 @@ public class AddWarehouseScene {
             return;
         }
 
+        if (WarehouseDAO.phoneExists(phone)) {
+            UIHelperC.showAlert(Alert.AlertType.WARNING, "A warehouse with this phone number already exists!");
+            return;
+        }
+
         Warehouse warehouse = new Warehouse(
                 0,
                 warehouseName,

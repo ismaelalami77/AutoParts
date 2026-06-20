@@ -129,6 +129,11 @@ public class UpdateWarehouseScene {
             return;
         }
 
+        if (WarehouseDAO.phoneExistsForOtherWarehouse(phone, warehouse.getWarehouseId())) {
+            UIHelperC.showAlert(Alert.AlertType.WARNING, "Another warehouse already uses this phone number!");
+            return;
+        }
+
         Warehouse updatedWarehouse = new Warehouse(
                 warehouse.getWarehouseId(),
                 warehouseName,

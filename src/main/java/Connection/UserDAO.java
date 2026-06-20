@@ -8,11 +8,13 @@ import java.sql.ResultSet;
 
 public class UserDAO {
 
-    // authenticates user using username and password
-    // if credentials are correct, returns User object
-    // otherwise returns null
     public User authenticate(String username, String password) {
-        String sql = "SELECT id, username, role, full_name FROM users WHERE username = ? AND password = ?";
+        String sql = """
+                SELECT employee_id, username, full_name, position, branch_id
+                FROM Employee
+                WHERE username = ?
+                  AND password = ?
+                """;
 
         try (Connection con = DBUtil.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -22,11 +24,15 @@ public class UserDAO {
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
+                    String position = rs.getString("position") == null ? "" : rs.getString("position");
+                    String role = position.toLowerCase().contains("manager") ? "MANAGER" : "EMPLOYEE";
+
                     return new User(
-                            rs.getInt("id"),
+                            rs.getInt("employee_id"),
                             rs.getString("username"),
-                            rs.getString("role"),
-                            rs.getString("full_name")
+                            role,
+                            rs.getString("full_name"),
+                            rs.getInt("branch_id")
                     );
                 }
             }

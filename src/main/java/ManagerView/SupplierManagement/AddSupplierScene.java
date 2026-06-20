@@ -121,6 +121,11 @@ public class AddSupplierScene {
             return;
         }
 
+        if (SupplierDAO.phoneExists(phone)) {
+            UIHelperC.showAlert(Alert.AlertType.WARNING, "A supplier with this phone number already exists!");
+            return;
+        }
+
         if (email.isEmpty()) {
             UIHelperC.showAlert(Alert.AlertType.WARNING, "Please enter email!");
             return;

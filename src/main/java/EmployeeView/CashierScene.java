@@ -1,8 +1,10 @@
 package EmployeeView;
 
 import Connection.CashierDAO;
+import Connection.CustomerDAO;
 import Connection.ProductDAO;
 import Login.User;
+import ManagerView.CustomerManagement.Customer;
 import ManagerView.ProductManagement.Product;
 import com.example.autoparts.UIHelperC;
 import javafx.collections.FXCollections;
@@ -27,10 +29,9 @@ public class CashierScene {
     private ObservableList<CartItem> observableCart = FXCollections.observableArrayList();
 
     private TextField searchField;
-    private TextField customerNameField;
-    private TextField customerPhoneField;
+    private ComboBox<Customer> customerComboBox;
+    private Label customerDetailsLabel;
 
-    private ComboBox<String> paymentMethodCombo;
     private Label totalLabel;
 
     private Button removeItemBtn;
@@ -44,16 +45,18 @@ public class CashierScene {
 
         root = new BorderPane();
         root.setPadding(new Insets(20));
+        root.getStyleClass().add("employees-root");
 
         createContent();
+        refreshCustomers();
         refreshProducts();
     }
 
     private void createContent() {
-        Text title = UIHelperC.createTitleText("Cashier System");
+        Text title = UIHelperC.createTitleText("Cashier");
 
         VBox topBox = new VBox(10);
-        topBox.setAlignment(Pos.CENTER);
+        topBox.setAlignment(Pos.CENTER_LEFT);
         topBox.getChildren().add(title);
         root.setTop(topBox);
 
@@ -61,9 +64,12 @@ public class CashierScene {
         productsPane.setHgap(10);
         productsPane.setVgap(10);
         productsPane.setPadding(new Insets(10));
+        productsPane.setPrefWrapLength(640);
 
         ScrollPane productsScroll = new ScrollPane(productsPane);
         productsScroll.setFitToWidth(true);
+        productsScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        productsScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         productsScroll.setPrefHeight(450);
 
         searchField = new TextField();
@@ -72,26 +78,32 @@ public class CashierScene {
 
         VBox productsBox = new VBox(10);
         productsBox.setPadding(new Insets(10));
+        productsBox.setMinWidth(560);
+        productsBox.getStyleClass().add("workspace-panel");
         productsBox.getChildren().addAll(
                 new Label("Products"),
                 searchField,
                 productsScroll
         );
+        VBox.setVgrow(productsScroll, Priority.ALWAYS);
 
         cartTable = createCartTable();
 
-        customerNameField = new TextField();
-        customerNameField.setPromptText("Customer Name");
+        customerComboBox = new ComboBox<>();
+        customerComboBox.setPromptText("Choose Customer");
+        customerComboBox.setMaxWidth(Double.MAX_VALUE);
+        customerComboBox.setOnAction(e -> showCustomerDetails(customerComboBox.getValue()));
 
-        customerPhoneField = new TextField();
-        customerPhoneField.setPromptText("Customer Phone");
-
-        paymentMethodCombo = new ComboBox<>();
-        paymentMethodCombo.getItems().addAll("Cash", "Card");
-        paymentMethodCombo.setValue("Cash");
+        customerDetailsLabel = new Label("Choose a customer to show details.");
+        customerDetailsLabel.getStyleClass().add("form-hint");
+        customerDetailsLabel.setWrapText(true);
+        customerDetailsLabel.setMinHeight(58);
+        customerDetailsLabel.setPrefHeight(58);
 
         totalLabel = new Label("Total: 0.00");
         totalLabel.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
+        totalLabel.setMaxWidth(Double.MAX_VALUE);
+        totalLabel.setAlignment(Pos.CENTER);
 
         removeItemBtn = new Button("Remove Item");
         clearCartBtn = new Button("Clear Cart");
@@ -103,25 +115,34 @@ public class CashierScene {
 
         HBox cartButtons = new HBox(10);
         cartButtons.setAlignment(Pos.CENTER);
+        cartButtons.setMaxWidth(Double.MAX_VALUE);
+        cartButtons.getStyleClass().add("cashier-actions");
+        removeItemBtn.setPrefWidth(130);
+        clearCartBtn.setPrefWidth(130);
+        checkoutBtn.setPrefWidth(130);
         cartButtons.getChildren().addAll(removeItemBtn, clearCartBtn, checkoutBtn);
 
         VBox cartBox = new VBox(10);
         cartBox.setPadding(new Insets(10));
+        cartBox.setMinWidth(470);
+        cartBox.setPrefWidth(470);
+        cartBox.setMaxWidth(470);
+        cartBox.getStyleClass().add("workspace-panel");
         cartBox.getChildren().addAll(
                 new Label("Cart"),
                 cartTable,
-                customerNameField,
-                customerPhoneField,
-                paymentMethodCombo,
+                new Label("Customer"),
+                customerComboBox,
+                customerDetailsLabel,
                 totalLabel,
                 cartButtons
         );
 
         HBox centerBox = new HBox(15);
+        centerBox.setFillHeight(true);
         centerBox.getChildren().addAll(productsBox, cartBox);
 
         HBox.setHgrow(productsBox, Priority.ALWAYS);
-        HBox.setHgrow(cartBox, Priority.ALWAYS);
 
         root.setCenter(centerBox);
     }
@@ -146,8 +167,9 @@ public class CashierScene {
 
         table.getColumns().addAll(idCol, nameCol, qtyCol, priceCol, subtotalCol);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        table.setPrefWidth(500);
-        table.setPrefHeight(400);
+        table.setMinHeight(360);
+        table.setPrefHeight(360);
+        table.setMaxHeight(360);
         table.setItems(observableCart);
 
         return table;
@@ -155,8 +177,22 @@ public class CashierScene {
 
     public void refreshProducts() {
         products.clear();
-        products.addAll(ProductDAO.getAllProducts());
+        products.addAll(ProductDAO.getProductsForBranch(user.getBranchId()));
         showProductButtons(searchField == null ? "" : searchField.getText());
+    }
+
+    public void refreshCustomers() {
+        Customer selectedCustomer = customerComboBox.getValue();
+        customerComboBox.getItems().setAll(CustomerDAO.getAllCustomers());
+
+        if (selectedCustomer != null) {
+            customerComboBox.getItems().stream()
+                    .filter(customer -> customer.getCustomerId() == selectedCustomer.getCustomerId())
+                    .findFirst()
+                    .ifPresent(customerComboBox::setValue);
+        }
+
+        showCustomerDetails(customerComboBox.getValue());
     }
 
     private void showProductButtons(String searchText) {
@@ -181,7 +217,11 @@ public class CashierScene {
             );
 
             productButton.setPrefSize(160, 100);
+            productButton.setMinSize(160, 100);
+            productButton.setMaxSize(160, 100);
+            productButton.setFocusTraversable(false);
             productButton.setWrapText(true);
+            productButton.getStyleClass().add("product-tile");
 
             if (product.getQuantity() <= 0) {
                 productButton.setDisable(true);
@@ -252,22 +292,15 @@ public class CashierScene {
     }
 
     private void checkout() {
-        String customerName = customerNameField.getText().trim();
-        String customerPhone = customerPhoneField.getText().trim();
-        String paymentMethod = paymentMethodCombo.getValue();
+        Customer selectedCustomer = customerComboBox.getValue();
 
         if (observableCart.isEmpty()) {
             UIHelperC.showAlert(Alert.AlertType.WARNING, "Cart is empty!");
             return;
         }
 
-        if (customerName.isEmpty()) {
-            UIHelperC.showAlert(Alert.AlertType.WARNING, "Please enter customer name!");
-            return;
-        }
-
-        if (customerPhone.isEmpty()) {
-            UIHelperC.showAlert(Alert.AlertType.WARNING, "Please enter customer phone!");
+        if (selectedCustomer == null) {
+            UIHelperC.showAlert(Alert.AlertType.WARNING, "Please choose a customer!");
             return;
         }
 
@@ -282,31 +315,20 @@ public class CashierScene {
 
         double total = calculateTotal();
 
-        int customerId = CashierDAO.getOrCreateCustomer(customerName, customerPhone);
-
-        if (customerId == -1) {
-            UIHelperC.showAlert(Alert.AlertType.ERROR, "Customer could not be saved!");
-            return;
-        }
-
         boolean saved = CashierDAO.saveSale(
-                customerId,
+                selectedCustomer.getCustomerId(),
                 user.getId(),
+                user.getBranchId(),
                 new ArrayList<>(observableCart),
-                total,
-                paymentMethod
+                total
         );
 
         if (saved) {
-            for (CartItem item : observableCart) {
-                ProductDAO.decreaseProductQuantity(item.getProductId(), item.getQuantity());
-            }
-
             UIHelperC.showAlert(Alert.AlertType.INFORMATION, "Sale completed successfully!");
 
             observableCart.clear();
-            customerNameField.clear();
-            customerPhoneField.clear();
+            customerComboBox.setValue(null);
+            showCustomerDetails(null);
             updateTotal();
             refreshProducts();
 
@@ -337,6 +359,26 @@ public class CashierScene {
 
     private void updateTotal() {
         totalLabel.setText(String.format("Total: %.2f", calculateTotal()));
+    }
+
+    private void showCustomerDetails(Customer customer) {
+        if (customer == null) {
+            customerDetailsLabel.setText("Choose a customer to show details.");
+            return;
+        }
+
+        String phone = customer.getPhone() == null || customer.getPhone().isBlank()
+                ? "No phone"
+                : customer.getPhone();
+        String address = customer.getAddress() == null || customer.getAddress().isBlank()
+                ? "No address"
+                : customer.getAddress();
+
+        customerDetailsLabel.setText(
+                "Name: " + customer.getCustomerName()
+                        + "\nPhone: " + phone
+                        + "\nAddress: " + address
+        );
     }
 
     public BorderPane getRoot() {

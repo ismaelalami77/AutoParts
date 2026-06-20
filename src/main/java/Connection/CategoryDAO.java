@@ -13,7 +13,7 @@ public class CategoryDAO {
         ArrayList<Category> list = new ArrayList<>();
 
         String sql = """
-                SELECT category_id, category_name, description
+                SELECT category_id, category_name
                 FROM Category
                 ORDER BY category_id
                 """;
@@ -25,8 +25,7 @@ public class CategoryDAO {
             while (rs.next()) {
                 Category category = new Category(
                         rs.getInt("category_id"),
-                        rs.getString("category_name"),
-                        rs.getString("description")
+                        rs.getString("category_name")
                 );
 
                 list.add(category);
@@ -41,15 +40,14 @@ public class CategoryDAO {
 
     public static boolean insertCategory(Category category) {
         String sql = """
-                INSERT INTO Category (category_name, description)
-                VALUES (?, ?)
+                INSERT INTO Category (category_name)
+                VALUES (?)
                 """;
 
         try (Connection con = DBUtil.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, category.getCategoryName());
-            ps.setString(2, category.getDescription());
 
             return ps.executeUpdate() > 0;
 
@@ -62,8 +60,7 @@ public class CategoryDAO {
     public static boolean updateCategory(Category category) {
         String sql = """
                 UPDATE Category
-                SET category_name = ?,
-                    description = ?
+                SET category_name = ?
                 WHERE category_id = ?
                 """;
 
@@ -71,8 +68,7 @@ public class CategoryDAO {
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, category.getCategoryName());
-            ps.setString(2, category.getDescription());
-            ps.setInt(3, category.getCategoryId());
+            ps.setInt(2, category.getCategoryId());
 
             return ps.executeUpdate() > 0;
 

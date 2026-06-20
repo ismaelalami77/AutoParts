@@ -13,7 +13,7 @@ public class WarehouseDAO {
         ArrayList<Warehouse> list = new ArrayList<>();
 
         String sql = """
-                SELECT warehouse_id, warehouse_name, location, phone
+                SELECT warehouse_id, warehouse_name, city, address, phone
                 FROM Warehouse
                 ORDER BY warehouse_id
                 """;
@@ -26,7 +26,7 @@ public class WarehouseDAO {
                 Warehouse warehouse = new Warehouse(
                         rs.getInt("warehouse_id"),
                         rs.getString("warehouse_name"),
-                        rs.getString("location"),
+                        rs.getString("city") + " - " + rs.getString("address"),
                         rs.getString("phone")
                 );
 
@@ -42,8 +42,8 @@ public class WarehouseDAO {
 
     public static boolean insertWarehouse(Warehouse warehouse) {
         String sql = """
-                INSERT INTO Warehouse (warehouse_name, location, phone)
-                VALUES (?, ?, ?)
+                INSERT INTO Warehouse (warehouse_name, city, address, phone)
+                VALUES (?, '', ?, ?)
                 """;
 
         try (Connection con = DBUtil.getConnection();
@@ -65,7 +65,7 @@ public class WarehouseDAO {
         String sql = """
                 UPDATE Warehouse
                 SET warehouse_name = ?,
-                    location = ?,
+                    address = ?,
                     phone = ?
                 WHERE warehouse_id = ?
                 """;
@@ -79,6 +79,34 @@ public class WarehouseDAO {
             ps.setInt(4, warehouse.getWarehouseId());
 
             return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean phoneExists(String phone) {
+        return phoneExistsForOtherWarehouse(phone, 0);
+    }
+
+    public static boolean phoneExistsForOtherWarehouse(String phone, int warehouseId) {
+        String sql = """
+                SELECT warehouse_id
+                FROM Warehouse
+                WHERE phone = ?
+                  AND warehouse_id <> ?
+                """;
+
+        try (Connection con = DBUtil.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, phone);
+            ps.setInt(2, warehouseId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

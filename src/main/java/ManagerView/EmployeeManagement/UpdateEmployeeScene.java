@@ -1,5 +1,6 @@
 package ManagerView.EmployeeManagement;
 
+import Connection.BranchDAO;
 import Connection.EmployeeDAO;
 import com.example.autoparts.UIHelperC;
 import javafx.geometry.Insets;
@@ -15,8 +16,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class UpdateEmployeeScene {
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private Stage stage;
     private Scene scene;
@@ -64,8 +70,7 @@ public class UpdateEmployeeScene {
         hireDatePicker = new DatePicker();
         branchIdField = UIHelperC.createStyledTextField("Branch ID");
 
-        hireDatePicker.setPrefSize(250, 50);
-        hireDatePicker.setEditable(false);
+        styleHireDatePicker();
 
         fillFields();
 
@@ -168,6 +173,11 @@ public class UpdateEmployeeScene {
             return;
         }
 
+        if (EmployeeDAO.phoneExistsForOtherEmployee(phone, employee.getEmployeeId())) {
+            UIHelperC.showAlert(Alert.AlertType.WARNING, "Another employee already uses this phone number!");
+            return;
+        }
+
         if (hireDatePicker.getValue() == null) {
             UIHelperC.showAlert(Alert.AlertType.WARNING, "Please choose hire date!");
             return;
@@ -195,6 +205,11 @@ public class UpdateEmployeeScene {
             return;
         }
 
+        if (!BranchDAO.branchExists(branchId)) {
+            UIHelperC.showAlert(Alert.AlertType.WARNING, "No branch found with this ID!");
+            return;
+        }
+
         Employee updatedEmployee = new Employee(
                 employee.getEmployeeId(),
                 fullName,
@@ -218,6 +233,28 @@ public class UpdateEmployeeScene {
 
     public void showStage() {
         stage.show();
+    }
+
+    private void styleHireDatePicker() {
+        hireDatePicker.setEditable(false);
+        hireDatePicker.setPrefSize(250, 54);
+        hireDatePicker.setMinSize(250, 54);
+        hireDatePicker.setMaxSize(250, 54);
+        hireDatePicker.getEditor().setPrefHeight(54);
+        hireDatePicker.getEditor().setMinHeight(54);
+        hireDatePicker.getEditor().setMaxHeight(54);
+        hireDatePicker.getEditor().setStyle("-fx-padding: 0 12px 0 12px; -fx-font-size: 15px;");
+        hireDatePicker.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(LocalDate date) {
+                return date == null ? "" : DATE_FORMATTER.format(date);
+            }
+
+            @Override
+            public LocalDate fromString(String text) {
+                return text == null || text.isBlank() ? null : LocalDate.parse(text, DATE_FORMATTER);
+            }
+        });
     }
 
     private boolean isValidFullName(String name) {

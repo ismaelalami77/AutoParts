@@ -5,7 +5,6 @@ import ManagerView.EmployeeManagement.Employee;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
 
 public class EmployeeDAO {
@@ -45,78 +44,31 @@ public class EmployeeDAO {
     }
 
     public static boolean insertEmployee(String username, String password, Employee employee) {
-        String insertUserSql = """
-                INSERT INTO users (username, password, role, full_name)
-                VALUES (?, ?, 'EMPLOYEE', ?)
-                """;
-
         String insertEmployeeSql = """
                 INSERT INTO Employee
-                (user_id, full_name, position, salary, phone, hire_date, branch_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                (username, password, full_name, position, salary, phone, hire_date, branch_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
-        try (Connection con = DBUtil.getConnection()) {
+        try (Connection con = DBUtil.getConnection();
+             PreparedStatement employeePs = con.prepareStatement(insertEmployeeSql)) {
 
-            con.setAutoCommit(false);
-
-            try (
-                    PreparedStatement userPs = con.prepareStatement(insertUserSql, Statement.RETURN_GENERATED_KEYS);
-                    PreparedStatement employeePs = con.prepareStatement(insertEmployeeSql)
-            ) {
-                userPs.setString(1, username);
-                userPs.setString(2, password);
-                userPs.setString(3, employee.getFullName());
-
-                int userAffected = userPs.executeUpdate();
-
-                if (userAffected == 0) {
-                    con.rollback();
-                    return false;
-                }
-
-                int userId;
-
-                try (ResultSet generatedKeys = userPs.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        userId = generatedKeys.getInt(1);
-                    } else {
-                        con.rollback();
-                        return false;
-                    }
-                }
-
-                employeePs.setInt(1, userId);
-                employeePs.setString(2, employee.getFullName());
-                employeePs.setString(3, employee.getPosition());
-                employeePs.setDouble(4, employee.getSalary());
-                employeePs.setString(5, employee.getPhone());
+                employeePs.setString(1, username);
+                employeePs.setString(2, password);
+                employeePs.setString(3, employee.getFullName());
+                employeePs.setString(4, employee.getPosition());
+                employeePs.setDouble(5, employee.getSalary());
+                employeePs.setString(6, employee.getPhone());
 
                 if (employee.getHireDate() == null) {
-                    employeePs.setDate(6, null);
+                    employeePs.setDate(7, null);
                 } else {
-                    employeePs.setDate(6, java.sql.Date.valueOf(employee.getHireDate()));
+                    employeePs.setDate(7, java.sql.Date.valueOf(employee.getHireDate()));
                 }
 
-                employeePs.setInt(7, employee.getBranchId());
+                employeePs.setInt(8, employee.getBranchId());
 
-                int employeeAffected = employeePs.executeUpdate();
-
-                if (employeeAffected == 0) {
-                    con.rollback();
-                    return false;
-                }
-
-                con.commit();
-                return true;
-
-            } catch (Exception e) {
-                con.rollback();
-                e.printStackTrace();
-                return false;
-            } finally {
-                con.setAutoCommit(true);
-            }
+                return employeePs.executeUpdate() > 0;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -154,6 +106,34 @@ public class EmployeeDAO {
             ps.setInt(7, employee.getEmployeeId());
 
             return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean phoneExists(String phone) {
+        return phoneExistsForOtherEmployee(phone, 0);
+    }
+
+    public static boolean phoneExistsForOtherEmployee(String phone, int employeeId) {
+        String sql = """
+                SELECT employee_id
+                FROM Employee
+                WHERE phone = ?
+                  AND employee_id <> ?
+                """;
+
+        try (Connection con = DBUtil.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, phone);
+            ps.setInt(2, employeeId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

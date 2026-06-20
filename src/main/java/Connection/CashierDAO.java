@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.List;
 
 public class CashierDAO {
@@ -18,8 +19,8 @@ public class CashierDAO {
                 """;
 
         String insertSql = """
-                INSERT INTO Customer (customer_name, phone)
-                VALUES (?, ?)
+                INSERT INTO Customer (customer_name, phone, address)
+                VALUES (?, ?, NULL)
                 """;
 
         try (Connection con = DBUtil.getConnection()) {
@@ -38,9 +39,7 @@ public class CashierDAO {
                 insertPs.setString(1, customerName);
                 insertPs.setString(2, phone);
 
-                int affected = insertPs.executeUpdate();
-
-                if (affected == 0) {
+                if (insertPs.executeUpdate() == 0) {
                     return -1;
                 }
 
@@ -58,25 +57,33 @@ public class CashierDAO {
         return -1;
     }
 
-    public static boolean saveSale(int customerId, int employeeUserId,
+    public static boolean saveSale(int customerId, int employeeId, int branchId,
                                    List<CartItem> cartItems,
-                                   double totalAmount,
-                                   String paymentMethod) {
+                                   double totalAmount) {
 
         String insertOrderSql = """
-                INSERT INTO Sales_Order (customer_id, employee_user_id, total_amount)
-                VALUES (?, ?, ?)
+                INSERT INTO Sales_Order (order_date, total_amount, status, customer_id, employee_id, branch_id)
+                VALUES (?, ?, 'Paid', ?, ?, ?)
                 """;
 
         String insertItemSql = """
                 INSERT INTO Sales_Order_Item
-                (order_id, product_id, quantity, unit_price, subtotal)
-                VALUES (?, ?, ?, ?, ?)
+                (sales_order_id, product_id, quantity, unit_price)
+                VALUES (?, ?, ?, ?)
                 """;
 
         String insertPaymentSql = """
-                INSERT INTO Payment (order_id, amount, payment_method)
-                VALUES (?, ?, ?)
+                INSERT INTO Payment (payment_date, amount, payment_method, sales_order_id)
+                VALUES (?, ?, ?, ?)
+                """;
+
+        String decreaseInventorySql = """
+                UPDATE Branch_Inventory
+                SET quantity = quantity - ?,
+                    last_updated = ?
+                WHERE branch_id = ?
+                  AND product_id = ?
+                  AND quantity >= ?
                 """;
 
         try (Connection con = DBUtil.getConnection()) {
@@ -85,28 +92,29 @@ public class CashierDAO {
             try (
                     PreparedStatement orderPs = con.prepareStatement(insertOrderSql, Statement.RETURN_GENERATED_KEYS);
                     PreparedStatement itemPs = con.prepareStatement(insertItemSql);
-                    PreparedStatement paymentPs = con.prepareStatement(insertPaymentSql)
+                    PreparedStatement paymentPs = con.prepareStatement(insertPaymentSql);
+                    PreparedStatement inventoryPs = con.prepareStatement(decreaseInventorySql)
             ) {
-                orderPs.setInt(1, customerId);
-                orderPs.setInt(2, employeeUserId);
-                orderPs.setDouble(3, totalAmount);
+                LocalDate today = LocalDate.now();
 
-                int orderAffected = orderPs.executeUpdate();
+                orderPs.setDate(1, java.sql.Date.valueOf(today));
+                orderPs.setDouble(2, totalAmount);
+                orderPs.setInt(3, customerId);
+                orderPs.setInt(4, employeeId);
+                orderPs.setInt(5, branchId);
 
-                if (orderAffected == 0) {
+                if (orderPs.executeUpdate() == 0) {
                     con.rollback();
                     return false;
                 }
 
                 int orderId;
-
                 try (ResultSet keys = orderPs.getGeneratedKeys()) {
-                    if (keys.next()) {
-                        orderId = keys.getInt(1);
-                    } else {
+                    if (!keys.next()) {
                         con.rollback();
                         return false;
                     }
+                    orderId = keys.getInt(1);
                 }
 
                 for (CartItem item : cartItems) {
@@ -114,19 +122,28 @@ public class CashierDAO {
                     itemPs.setInt(2, item.getProductId());
                     itemPs.setInt(3, item.getQuantity());
                     itemPs.setDouble(4, item.getUnitPrice());
-                    itemPs.setDouble(5, item.getSubtotal());
                     itemPs.addBatch();
+
+                    inventoryPs.setInt(1, item.getQuantity());
+                    inventoryPs.setDate(2, java.sql.Date.valueOf(today));
+                    inventoryPs.setInt(3, branchId);
+                    inventoryPs.setInt(4, item.getProductId());
+                    inventoryPs.setInt(5, item.getQuantity());
+
+                    if (inventoryPs.executeUpdate() == 0) {
+                        con.rollback();
+                        return false;
+                    }
                 }
 
                 itemPs.executeBatch();
 
-                paymentPs.setInt(1, orderId);
+                paymentPs.setDate(1, java.sql.Date.valueOf(today));
                 paymentPs.setDouble(2, totalAmount);
-                paymentPs.setString(3, paymentMethod);
+                paymentPs.setString(3, "Paid");
+                paymentPs.setInt(4, orderId);
 
-                int paymentAffected = paymentPs.executeUpdate();
-
-                if (paymentAffected == 0) {
+                if (paymentPs.executeUpdate() == 0) {
                     con.rollback();
                     return false;
                 }

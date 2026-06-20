@@ -27,7 +27,6 @@ public class AddCategoryScene {
     private Text addCategoryText;
 
     private TextField categoryNameField;
-    private TextField descriptionField;
 
     private Button addCategoryButton;
     private Button cancelButton;
@@ -51,13 +50,9 @@ public class AddCategoryScene {
         grid.setVgap(15);
 
         categoryNameField = UIHelperC.createStyledTextField("Category Name");
-        descriptionField = UIHelperC.createStyledTextField("Description");
 
         grid.add(UIHelperC.createInfoText("Category Name:"), 0, 0);
         grid.add(categoryNameField, 1, 0);
-
-        grid.add(UIHelperC.createInfoText("Description:"), 0, 1);
-        grid.add(descriptionField, 1, 1);
 
         addCategoryButton = UIHelperC.createStyledButton("Add");
         cancelButton = UIHelperC.createStyledButton("Cancel");
@@ -84,28 +79,20 @@ public class AddCategoryScene {
         cancelButton.setOnAction(e -> stage.close());
         addCategoryButton.setOnAction(e -> addCategory());
 
-        categoryNameField.setOnAction(e -> descriptionField.requestFocus());
-        descriptionField.setOnAction(e -> addCategory());
+        categoryNameField.setOnAction(e -> addCategory());
     }
 
     private void addCategory() {
         String categoryName = categoryNameField.getText().trim();
-        String description = descriptionField.getText().trim();
 
         if (categoryName.isEmpty()) {
             UIHelperC.showAlert(Alert.AlertType.WARNING, "Please enter category name!");
             return;
         }
 
-        if (description.isEmpty()) {
-            UIHelperC.showAlert(Alert.AlertType.WARNING, "Please enter description!");
-            return;
-        }
-
         Category category = new Category(
                 0,
-                categoryName,
-                description
+                categoryName
         );
 
         boolean inserted = CategoryDAO.insertCategory(category);

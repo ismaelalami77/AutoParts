@@ -131,6 +131,11 @@ public class AddBranchScene {
             return;
         }
 
+        if (BranchDAO.phoneExists(phone)) {
+            UIHelperC.showAlert(Alert.AlertType.WARNING, "A branch with this phone number already exists!");
+            return;
+        }
+
         Branch branch = new Branch(
                 0,
                 branchName,

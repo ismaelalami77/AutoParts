@@ -72,17 +72,17 @@ public class ViewProducts {
         TableColumn<Product, String> supplierCol = new TableColumn<>("Supplier");
         supplierCol.setCellValueFactory(new PropertyValueFactory<>("supplierName"));
 
-        TableColumn<Product, Double> costPriceCol = new TableColumn<>("Cost Price");
+        TableColumn<Product, Double> costPriceCol = new TableColumn<>("Supply Price");
         costPriceCol.setCellValueFactory(new PropertyValueFactory<>("costPrice"));
 
-        TableColumn<Product, Double> sellingPriceCol = new TableColumn<>("Selling Price");
+        TableColumn<Product, Double> sellingPriceCol = new TableColumn<>("Unit Price");
         sellingPriceCol.setCellValueFactory(new PropertyValueFactory<>("sellingPrice"));
 
-        TableColumn<Product, Integer> quantityCol = new TableColumn<>("Qty");
+        TableColumn<Product, Integer> quantityCol = new TableColumn<>("Total Stock");
         quantityCol.setCellValueFactory(new PropertyValueFactory<>("quantity"));
 
-        TableColumn<Product, String> descriptionCol = new TableColumn<>("Description");
-        descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
+        TableColumn<Product, String> brandCol = new TableColumn<>("Brand");
+        brandCol.setCellValueFactory(new PropertyValueFactory<>("brand"));
 
         productsTable.getColumns().addAll(
                 idCol,
@@ -92,7 +92,7 @@ public class ViewProducts {
                 costPriceCol,
                 sellingPriceCol,
                 quantityCol,
-                descriptionCol
+                brandCol
         );
 
         productsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -100,7 +100,7 @@ public class ViewProducts {
         productsTable.setItems(observableProducts);
 
         searchTextField = new TextField();
-        searchTextField.setPromptText("Search product by name, category, supplier, or description...");
+        searchTextField.setPromptText("Search product by name, category, supplier, or brand...");
         searchTextField.getStyleClass().add("employee-search-field");
 
         searchTextField.setMaxWidth(Double.MAX_VALUE);
@@ -168,12 +168,12 @@ public class ViewProducts {
             String productName = product.getProductName() == null ? "" : product.getProductName().toLowerCase();
             String categoryName = product.getCategoryName() == null ? "" : product.getCategoryName().toLowerCase();
             String supplierName = product.getSupplierName() == null ? "" : product.getSupplierName().toLowerCase();
-            String description = product.getDescription() == null ? "" : product.getDescription().toLowerCase();
+            String brand = product.getBrand() == null ? "" : product.getBrand().toLowerCase();
 
             if (productName.contains(query)
                     || categoryName.contains(query)
                     || supplierName.contains(query)
-                    || description.contains(query)) {
+                    || brand.contains(query)) {
                 filtered.add(product);
             }
         }

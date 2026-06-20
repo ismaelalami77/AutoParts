@@ -66,13 +66,9 @@ public class ViewCategories {
         TableColumn<Category, String> categoryNameCol = new TableColumn<>("Category Name");
         categoryNameCol.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
 
-        TableColumn<Category, String> descriptionCol = new TableColumn<>("Description");
-        descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
-
         categoriesTable.getColumns().addAll(
                 idCol,
-                categoryNameCol,
-                descriptionCol
+                categoryNameCol
         );
 
         categoriesTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -80,7 +76,7 @@ public class ViewCategories {
         categoriesTable.setItems(observableCategories);
 
         searchTextField = new TextField();
-        searchTextField.setPromptText("Search category by name or description...");
+        searchTextField.setPromptText("Search category by name...");
         searchTextField.getStyleClass().add("employee-search-field");
 
         searchTextField.setMaxWidth(Double.MAX_VALUE);
@@ -146,9 +142,8 @@ public class ViewCategories {
 
         for (Category category : categories) {
             String categoryName = category.getCategoryName() == null ? "" : category.getCategoryName().toLowerCase();
-            String description = category.getDescription() == null ? "" : category.getDescription().toLowerCase();
 
-            if (categoryName.contains(query) || description.contains(query)) {
+            if (categoryName.contains(query)) {
                 filtered.add(category);
             }
         }

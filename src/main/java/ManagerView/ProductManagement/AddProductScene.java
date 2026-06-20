@@ -36,8 +36,7 @@ public class AddProductScene {
     private ComboBox<Supplier> supplierComboBox;
     private TextField costPriceField;
     private TextField sellingPriceField;
-    private TextField descriptionField;
-    private TextField quantityField;
+    private TextField brandField;
 
     private Button addProductButton;
     private Button cancelButton;
@@ -73,10 +72,9 @@ public class AddProductScene {
         supplierComboBox.setPrefSize(250, 44);
         supplierComboBox.setMaxWidth(250);
 
-        costPriceField = UIHelperC.createStyledTextField("Cost Price");
-        sellingPriceField = UIHelperC.createStyledTextField("Selling Price");
-        quantityField = UIHelperC.createStyledTextField("Quantity");
-        descriptionField = UIHelperC.createStyledTextField("Description");
+        costPriceField = UIHelperC.createStyledTextField("Supply Price");
+        sellingPriceField = UIHelperC.createStyledTextField("Unit Price");
+        brandField = UIHelperC.createStyledTextField("Brand");
 
         grid.add(UIHelperC.createInfoText("Product Name:"), 0, 0);
         grid.add(productNameField, 1, 0);
@@ -87,17 +85,14 @@ public class AddProductScene {
         grid.add(UIHelperC.createInfoText("Supplier:"), 0, 2);
         grid.add(supplierComboBox, 1, 2);
 
-        grid.add(UIHelperC.createInfoText("Cost Price:"), 0, 3);
+        grid.add(UIHelperC.createInfoText("Supply Price:"), 0, 3);
         grid.add(costPriceField, 1, 3);
 
-        grid.add(UIHelperC.createInfoText("Selling Price:"), 0, 4);
+        grid.add(UIHelperC.createInfoText("Unit Price:"), 0, 4);
         grid.add(sellingPriceField, 1, 4);
 
-        grid.add(UIHelperC.createInfoText("Quantity:"), 0, 5);
-        grid.add(quantityField, 1, 5);
-
-        grid.add(UIHelperC.createInfoText("Description:"), 0, 6);
-        grid.add(descriptionField, 1, 6);
+        grid.add(UIHelperC.createInfoText("Brand:"), 0, 5);
+        grid.add(brandField, 1, 5);
 
         addProductButton = UIHelperC.createStyledButton("Add");
         cancelButton = UIHelperC.createStyledButton("Cancel");
@@ -112,7 +107,7 @@ public class AddProductScene {
         root.setCenter(centerVbox);
 
         stage = new Stage();
-        scene = new Scene(root, 720, 620);
+        scene = new Scene(root, 720, 600);
 
         scene.getStylesheets().add(
                 getClass().getResource("/com/example/autoparts/style.css").toExternalForm()
@@ -128,9 +123,8 @@ public class AddProductScene {
         categoryComboBox.setOnAction(e -> supplierComboBox.requestFocus());
         supplierComboBox.setOnAction(e -> costPriceField.requestFocus());
         costPriceField.setOnAction(e -> sellingPriceField.requestFocus());
-        sellingPriceField.setOnAction(e -> quantityField.requestFocus());
-        quantityField.setOnAction(e -> descriptionField.requestFocus());
-        descriptionField.setOnAction(e -> addProduct());
+        sellingPriceField.setOnAction(e -> brandField.requestFocus());
+        brandField.setOnAction(e -> addProduct());
     }
 
     private void addProduct() {
@@ -139,12 +133,7 @@ public class AddProductScene {
         Supplier selectedSupplier = supplierComboBox.getValue();
         String costPriceText = costPriceField.getText().trim();
         String sellingPriceText = sellingPriceField.getText().trim();
-        String description = descriptionField.getText().trim();
-        String quantityText = quantityField.getText().trim();
-        if (quantityText.isEmpty()) {
-            UIHelperC.showAlert(Alert.AlertType.WARNING, "Please enter quantity!");
-            return;
-        }
+        String brand = brandField.getText().trim();
 
         if (productName.isEmpty()) {
             UIHelperC.showAlert(Alert.AlertType.WARNING, "Please enter product name!");
@@ -175,7 +164,6 @@ public class AddProductScene {
         int supplierId = selectedSupplier.getSupplierId();
         double costPrice;
         double sellingPrice;
-        int quantity;
 
         try {
             costPrice = Double.parseDouble(costPriceText);
@@ -188,18 +176,6 @@ public class AddProductScene {
             sellingPrice = Double.parseDouble(sellingPriceText);
         } catch (NumberFormatException e) {
             UIHelperC.showAlert(Alert.AlertType.WARNING, "Selling price must be a number!");
-            return;
-        }
-
-        try {
-            quantity = Integer.parseInt(quantityText);
-        } catch (NumberFormatException e) {
-            UIHelperC.showAlert(Alert.AlertType.WARNING, "Quantity must be a number!");
-            return;
-        }
-
-        if (quantity < 0) {
-            UIHelperC.showAlert(Alert.AlertType.WARNING, "Quantity cannot be negative!");
             return;
         }
 
@@ -217,15 +193,15 @@ public class AddProductScene {
                 selectedSupplier.getSupplierName(),
                 costPrice,
                 sellingPrice,
-                description,
-                quantity
+                brand,
+                0
         );
 
         boolean inserted = ProductDAO.insertProduct(product);
 
         if (inserted) {
             viewProducts.loadProducts();
-            UIHelperC.showAlert(Alert.AlertType.INFORMATION, "Product saved successfully!");
+            UIHelperC.showAlert(Alert.AlertType.INFORMATION, "Product saved. Use Purchases to add warehouse stock.");
             stage.close();
         } else {
             UIHelperC.showAlert(Alert.AlertType.ERROR, "Product could not be added! Check the selected category and supplier.");

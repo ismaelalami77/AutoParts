@@ -5,12 +5,18 @@ public class User {
     private String username;
     private String role;
     private String fullName;
+    private int branchId;
 
     public User(int id, String username, String role, String fullName) {
+        this(id, username, role, fullName, 0);
+    }
+
+    public User(int id, String username, String role, String fullName, int branchId) {
         this.id = id;
         this.username = username;
         this.role = role;
         this.fullName = fullName;
+        this.branchId = branchId;
     }
 
     public int getId() {
@@ -43,5 +49,13 @@ public class User {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public int getBranchId() {
+        return branchId;
+    }
+
+    public void setBranchId(int branchId) {
+        this.branchId = branchId;
     }
 }

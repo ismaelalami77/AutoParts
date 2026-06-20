@@ -132,6 +132,11 @@ public class UpdateSupplierScene {
             return;
         }
 
+        if (SupplierDAO.phoneExistsForOtherSupplier(phone, supplier.getSupplierId())) {
+            UIHelperC.showAlert(Alert.AlertType.WARNING, "Another supplier already uses this phone number!");
+            return;
+        }
+
         if (email.isEmpty()) {
             UIHelperC.showAlert(Alert.AlertType.WARNING, "Please enter email!");
             return;

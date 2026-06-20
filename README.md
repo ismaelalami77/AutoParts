@@ -136,43 +136,46 @@ COMP333 Database Project
 ## 📸 Screenshots
 
 ### 🔐 Login
-![Login](screenshots/login.png)
+![Login](ScreenShots/Login.png)
 
 ### 📊 Dashboard
-![Dashboard](screenshots/dashboard.png)
+![Dashboard](ScreenShots/Dashboard.png)
 
 ### 🏢 Branches
-![Branches](screenshots/branches.png)
-
-### 👥 Manage Employees
-![Manage Employees](screenshots/manage-employees.png)
-
-### 📦 Products
-![Products](screenshots/products.png)
-
-### 🚚 Suppliers
-![Suppliers](screenshots/suppliers.png)
-
-### 👤 Customers
-![Customers](screenshots/customers.png)
-
-### 🏬 Warehouses
-![Warehouses](screenshots/warehouses.png)
+![Branches](ScreenShots/Branches.png)
 
 ### 🏢 Branch Inventory
-![Branch Inventory](screenshots/branch-inventory.png)
-
-### 🏬 Warehouse Inventory
-![Warehouse Inventory](screenshots/warehouse-inventory.png)
+![Branch Inventory](ScreenShots/branchInv.png)
 
 ### 🔗 Branch Products
-![Branch Products](screenshots/branch-products.png)
+![Branch Products](ScreenShots/branchProducts.png)
 
 ### 💵 Cashier
-![Cashier](screenshots/cash.png)
+![Cashier](ScreenShots/cash.png)
+
+### 🗂️ Categories
+![Categories](ScreenShots/categories.png)
+
+### 👤 Customers
+![Customers](ScreenShots/Customers.png)
+
+### 👥 Manage Employees
+![Manage Employees](ScreenShots/ManageEmployees.png)
+
+### 📦 Products
+![Products](ScreenShots/products.png)
 
 ### 🧾 Receipts
-![Receipts](screenshots/receipts.png)
+![Receipts](ScreenShots/reciepts.png)
 
 ### 📈 Reports
-![Reports](screenshots/reports.png)
+![Reports](ScreenShots/reports.png)
+
+### 🚚 Suppliers
+![Suppliers](ScreenShots/suppliers.png)
+
+### 🏬 Warehouse Inventory
+![Warehouse Inventory](ScreenShots/warehouseInv.png)
+
+### 🏬 Warehouses
+![Warehouses](ScreenShots/warehouses.png)
